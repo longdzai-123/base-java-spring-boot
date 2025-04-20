@@ -1,19 +1,23 @@
 package longlh.dev.base.excel.base.excel.threads;
 
 import lombok.RequiredArgsConstructor;
-import longlh.dev.base.excel.base.excel.service.SendEmail;
+import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
-public class ThreadSendEmail extends Thread {
-    private final SendEmail sendEmail;
+@Slf4j
+public class ThreadNew extends Thread {
 
     @Override
     public void run() {
-        // send email
+        log.info("Thread started: {}", Thread.currentThread().getName());
         try {
-            sendEmail.send();
+            // Giả lập công việc mất thời gian
+            Thread.sleep(100);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            log.error("Thread was interrupted during sleep", e);
+            // Đảm bảo rằng trạng thái gián đoạn được khôi phục
+            Thread.currentThread().interrupt(); // Đặt lại trạng thái gián đoạn cho thread
         }
+        log.info("Thread ended: {}", Thread.currentThread().getName());
     }
 }

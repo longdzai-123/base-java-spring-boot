@@ -1,2 +1,7 @@
-package longlh.dev.base.excel.base.excel.service;public interface SendEmail {
+package longlh.dev.base.excel.base.excel.service;
+
+public interface SendEmail {
+     void send();
+
+
 }
