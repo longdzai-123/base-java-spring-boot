@@ -1,14 +1,24 @@
-# stage 1: Use Maven for  build
-#FROM maven:3.8.5-openjdk-17-slim as build
-#WORKDIR /app
-#COPY . ./base-java
-#WORKDIR /app/base-java
-#RUN mvn clean package -DskipTests
-#
-#
-## Stage 2 : use OpenJDK for running
-#FROM openjdk:17-jdk-slim
-#WORKDIR /app
-#COPY --from=build /app/base-java/target/*.jar base-java.jar
-#EXPOSE 8761
-#ENTRYPOINT ["java","-jar","base-java.jar"]
+# Stage 1: Build the Spring Boot application with Gradle
+FROM gradle:7.5-jdk17 AS builder
+
+WORKDIR /app
+
+COPY build.gradle .
+COPY settings.gradle .
+COPY src src
+
+# Show the directory contents before running the build
+RUN ls -al
+
+# Run the build command with more detailed output
+RUN gradle build --no-daemon --stacktrace
+
+FROM eclipse-temurin:17
+
+WORKDIR /app
+
+COPY --from=builder /app/build/libs/*.jar /app/app.jar
+
+CMD ["java", "-jar", "app.jar"]
+
+# RUN apk --no-cache add fontconfig ttf-dejavu

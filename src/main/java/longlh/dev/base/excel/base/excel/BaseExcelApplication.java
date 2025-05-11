@@ -32,7 +32,7 @@ public class BaseExcelApplication {
 		thread.start();
 
 		thread.join();
-		context.close();
+		//context.close();
 
 
 
