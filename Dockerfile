@@ -1,23 +1,14 @@
-# Stage 1: Build the Spring Boot application with Maven
-FROM maven:3.9.4-eclipse-temurin-17 AS builder
-
+#stage 1: Use Maven for  build
+FROM maven:3.8.5-openjdk-17-slim as build
 WORKDIR /app
-
-# ✅ Cấu hình UTF-8 locale
-ENV LANG=C.UTF-8
-
-# Copy Maven descriptor files first (tận dụng cache tốt hơn)
-COPY pom.xml .
-COPY src src
-
-# Build application
+COPY . ./base-java
+WORKDIR /app/base-java
 RUN mvn clean package -DskipTests
 
-# Stage 2: Run the application
-FROM eclipse-temurin:17
 
+# Stage 2 : use OpenJDK for running
+FROM openjdk:17-jdk-slim
 WORKDIR /app
-
-COPY --from=builder /app/target/*.jar /app/app.jar
-
-CMD ["java", "-jar", "app.jar"]
+COPY --from=build /app/base-java/target/*.jar base-java.jar
+EXPOSE 8080
+ENTRYPOINT ["java","-jar","base-java.jar"]
