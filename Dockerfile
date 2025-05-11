@@ -1,24 +1,22 @@
-# Stage 1: Build the Spring Boot application with Gradle
-FROM gradle:7.5-jdk17 AS builder
+# Stage 1: Build the Spring Boot application with Maven
+FROM maven:3.9.4-eclipse-temurin-17 AS builder
 
 WORKDIR /app
 
-COPY build.gradle .
-COPY settings.gradle .
+# Copy Maven descriptor files first (tận dụng cache tốt hơn)
+COPY pom.xml .
 COPY src src
 
-# Show the directory contents before running the build
-RUN ls -al
+# Build application
+RUN mvn clean package -DskipTests
 
-# Run the build command with more detailed output
-RUN gradle build --no-daemon --stacktrace
-
+# Stage 2: Run the application
 FROM eclipse-temurin:17
 
 WORKDIR /app
 
-COPY --from=builder /app/build/libs/*.jar /app/app.jar
+# Copy the built jar from the builder stage
+COPY --from=builder /app/target/*.jar /app/app.jar
 
+# Run the jar
 CMD ["java", "-jar", "app.jar"]
-
-# RUN apk --no-cache add fontconfig ttf-dejavu
