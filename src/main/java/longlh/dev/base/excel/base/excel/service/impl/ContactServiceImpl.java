@@ -1,6 +1,7 @@
 package longlh.dev.base.excel.base.excel.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import longlh.dev.base.excel.base.excel.dto.ContactDto;
 import longlh.dev.base.excel.base.excel.entity.Contact;
 import longlh.dev.base.excel.base.excel.repository.ContactRepository;
@@ -14,6 +15,7 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ContactServiceImpl implements ContactService {
     //private final JdbcTemplate jdbcTemplate;
     private final ContactRepository contactRepository;
@@ -57,6 +59,9 @@ public class ContactServiceImpl implements ContactService {
 
         // lưu log vào redis
         redisTemplate.opsForValue().set(contact.getId().toString(), contact);
+
+        Contact contactFromRedis = (Contact) redisTemplate.opsForValue().get(contact.getId().toString());
+        log.info("From Redis: {}", contactFromRedis);
         return null;
     }
 
