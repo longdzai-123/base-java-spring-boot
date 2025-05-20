@@ -8,6 +8,7 @@ import longlh.dev.base.excel.base.excel.repository.ContactRepository;
 import longlh.dev.base.excel.base.excel.service.ContactService;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
@@ -20,6 +21,8 @@ public class ContactServiceImpl implements ContactService {
     //private final JdbcTemplate jdbcTemplate;
     private final ContactRepository contactRepository;
     private final RedisTemplate<String, Object> redisTemplate;
+
+    private final KafkaTemplate<String, String> kafkaTemplate;
 
 //    public ContactServiceImpl(DataSource dataSource) {
 //        jdbcTemplate = new JdbcTemplate(dataSource);
@@ -59,6 +62,9 @@ public class ContactServiceImpl implements ContactService {
 
         // lưu log vào redis
         redisTemplate.opsForValue().set(contact.getId().toString(), contact);
+
+        // bắn message vào kafka
+        kafkaTemplate.send("contact", contact.toString());
 
         Contact contactFromRedis = (Contact) redisTemplate.opsForValue().get(contact.getId().toString());
         log.info("From Redis: {}", contactFromRedis);

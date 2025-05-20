@@ -17,8 +17,6 @@ public class ContactController {
     @PostMapping("/contact/add")
     public ContactDto create(@RequestBody ContactDto contactDto) {
         return contactService.add(contactDto);
-        Json
-
     }
 
 //    @GetMapping("/contact/all")
